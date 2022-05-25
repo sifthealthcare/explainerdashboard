@@ -17,6 +17,7 @@ from types import MethodType
 from functools import wraps
 from threading import Lock
 import warnings
+import h2o
 
 import numpy as np
 import pandas as pd
@@ -154,7 +155,10 @@ class BaseExplainer(ABC):
                     shap = 'kernel'
 
         if not hasattr(self, "X"):
-            self.X = X.copy()
+            if isinstance(X, h2o.H2OFrame):
+                self.X = h2o.deep_copy(X)
+            else:
+                self.X = X.copy()
         if not hasattr(self, "X_background"):
             if X_background is not None:
                 self.X_background = X_background.copy() 
